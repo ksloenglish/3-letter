@@ -84,10 +84,10 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            justify-content: flex-start; /* Changed from center to allow scrolling from top */
+            justify-content: flex-start; 
             align-items: center;
             padding: 1rem;
-            /* Added extra bottom padding to ensure the last button is never obscured */
+            /* Extra bottom padding to ensure the last button is never obscured */
             padding-bottom: 4rem; 
             width: 100%;
             max-width: 550px;
@@ -118,7 +118,7 @@
             align-items: center;
             animation: fadeIn 0.5s cubic-bezier(0.22, 1, 0.36, 1);
             min-height: 0; 
-            margin-top: auto; /* Helps center content vertically if space permits */
+            margin-top: auto; 
             margin-bottom: auto;
         }
 
@@ -688,8 +688,8 @@
     </footer>
 
     <script>
-        // --- Database (CSW24 3-Letter Words) ---
-        // Updated definitions with correct spacing before brackets
+        // --- Database (CSW24 3-Letter Words with Definitions) ---
+        // This list is used for QUESTIONS (because we have definitions)
         const wordDatabase = {
             "AAH": "啊 (感嘆詞)", "AAL": "一種東印度樹", "AAS": "AA的複數 (熔岩)", "ABA": "阿拉伯長袍", "ABB": "緯紗", "ABS": "腹肌", "ABY": "贖罪", 
             "ACE": "王牌", "ACH": "哎呀 (感嘆詞)", "ACK": "確認訊號", "ACT": "行動", "ADD": "增加", "ADO": "忙亂", "ADS": "廣告 (複數)", "ADZ": "手斧", 
@@ -766,6 +766,38 @@
             "ZEL": "鈸 (東方)", "ZEN": "禪", "ZEP": "齊柏林飛船", "ZEX": "性別中立代詞", "ZHO": "犏牛", "ZIG": "急轉", "ZIN": "金粉黛紅酒", "ZIP": "拉鍊; 活力", 
             "ZIT": "青春痘", "ZIZ": "小睡 (俚語)", "ZOA": "動物 (複數)", "ZOL": "大麻捲菸", "ZOO": "動物園"
         };
+
+        // --- FULL CSW24 LIST (For Validation) ---
+        // This list is used to check if a distractor is a real word.
+        // If it is in this list, we REJECT it as a distractor.
+        const fullCSWList = [
+            "AAH","AAL","AAS","ABA","ABB","ABS","ABY","ACE","ACH","ACK","ACT","ADD","ADO","ADS","ADZ","AFF","AFT","AGA","AGE","AGO","AGS",
+            "BAA","BAC","BAD","BAE","BAG","BAH","BAL","BAM","BAN","BAO","BAP","BAR","BAS","BAT","BAW","BAY","BED","BEE","BEG","BEL","BEN",
+            "CAA","CAB","CAD","CAF","CAG","CAL","CAM","CAN","CAP","CAR","CAT","CAW","CAY","CAZ","CEE","CEL","CEP","CHA","CHE","CHI","CID",
+            "DAB","DAD","DAE","DAG","DAH","DAK","DAL","DAM","DAN","DAP","DAS","DAW","DAY","DEB","DEE","DEF","DEG","DEI","DEL","DEN","DEP",
+            "EAN","EAR","EAS","EAT","EAU","EBB","ECH","ECO","ECU","EDH","EDS","EEK","EEL","EEN","EEW","EFF","EFS","EFT","EGG","EGO","EHS",
+            "FAA","FAB","FAD","FAE","FAG","FAH","FAM","FAN","FAP","FAR","FAS","FAT","FAV","FAW","FAX","FAY","FED","FEE","FEG","FEH","FEM",
+            "GAB","GAD","GAE","GAG","GAK","GAL","GAM","GAN","GAP","GAR","GAS","GAT","GAU","GAW","GAY","GED","GEE","GEL","GEM","GEN","GEO",
+            "HAD","HAE","HAG","HAH","HAJ","HAM","HAN","HAO","HAP","HAS","HAT","HAW","HAY","HEH","HEM","HEN","HEP","HER","HES","HET","HEW",
+            "ICE","ICH","ICK","ICY","IDE","IDS","IFF","IFS","IGG","ILK","ILL","IMP","ING","INK","INN","INS","INT","ION","IOS","IRE","IRK",
+            "JAB","JAG","JAI","JAK","JAM","JAP","JAR","JAW","JAY","JEE","JET","JEU","JIB","JIG","JIN","JIZ","JOB","JOE","JOG","JOL","JOR",
+            "KAB","KAE","KAF","KAI","KAK","KAM","KAS","KAT","KAW","KAY","KEA","KEB","KED","KEF","KEG","KEN","KEP","KET","KEX","KEY","KHI",
+            "LAB","LAC","LAD","LAG","LAH","LAM","LAP","LAR","LAS","LAT","LAV","LAW","LAX","LAY","LEA","LED","LEE","LEG","LEI","LEK","LEP",
+            "MAA","MAC","MAD","MAE","MAG","MAK","MAL","MAM","MAN","MAP","MAR","MAS","MAT","MAW","MAX","MAY","MED","MEE","MEG","MEH","MEL",
+            "NAB","NAE","NAG","NAH","NAM","NAN","NAP","NAS","NAT","NAV","NAW","NAY","NEB","NED","NEE","NEF","NEG","NEK","NEP","NET","NEW",
+            "OAF","OAK","OAR","OAT","OBA","OBE","OBI","OBO","OBS","OCA","OCH","ODA","ODD","ODE","ODS","OES","OFF","OFT","OHM","OHO","OHS",
+            "PAC","PAD","PAH","PAK","PAL","PAM","PAN","PAP","PAR","PAS","PAT","PAV","PAW","PAX","PAY","PEA","PEC","PED","PEE","PEG","PEH",
+            "QAT","QIN","QIS","QUA",
+            "RAD","RAG","RAH","RAI","RAJ","RAM","RAN","RAP","RAS","RAT","RAV","RAW","RAX","RAY","REB","REC","RED","REE","REF","REG","REH",
+            "SAB","SAC","SAD","SAE","SAG","SAI","SAL","SAM","SAN","SAP","SAR","SAT","SAU","SAV","SAW","SAX","SAY","SAZ","SEA","SEC","SED",
+            "TAB","TAD","TAE","TAG","TAI","TAJ","TAK","TAM","TAN","TAO","TAP","TAR","TAS","TAT","TAU","TAV","TAW","TAX","TAY","TEA","TEC",
+            "UDO","UDS","UEY","UFO","UGH","UGS","UKE","ULE","ULU","UME","UMM","UMP","UMS","UMU","UNI","UNS","UPO","UPS","URB","URD","URE",
+            "VAC","VAE","VAG","VAN","VAR","VAS","VAT","VAU","VAV","VAW","VAX","VEE","VEG","VET","VEX","VIA","VID","VIE","VIG","VIM","VIN",
+            "WAB","WAD","WAE","WAG","WAI","WAN","WAP","WAR","WAS","WAT","WAW","WAX","WAY","WAZ","WEB","WED","WEE","WEM","WEN","WET","WEX",
+            "XED","XIS",
+            "YAD","YAE","YAG","YAH","YAK","YAM","YAP","YAR","YAS","YAW","YAY","YEA","YEH","YEN","YEP","YER","YES","YET","YEW","YEX","YEZ",
+            "ZAG","ZAP","ZAS","ZAX","ZEA","ZED","ZEE","ZEK","ZEL","ZEN","ZEP","ZEX","ZHO","ZIG","ZIN","ZIP","ZIT","ZIZ","ZOA","ZOL","ZOO"
+        ];
 
         const validWords = Object.keys(wordDatabase);
         const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -908,7 +940,7 @@
             // 1. Must start with same letter (index 0).
             // 2. Must share EITHER index 1 OR index 2.
             // 3. The changed letter is random.
-            // 4. Result must NOT be in validWords.
+            // 4. Result must NOT be in fullCSWList (the complete valid word list).
             
             const firstLetter = correctWord[0];
             const secondLetter = correctWord[1];
@@ -937,8 +969,10 @@
                     distractor = firstLetter + randomChar + thirdLetter;
                 }
 
-                // Validation
-                if (distractor !== correctWord && !validWords.includes(distractor)) {
+                // Validation:
+                // 1. Must not be the correct word itself.
+                // 2. Must NOT be in the full list of valid words (fullCSWList).
+                if (distractor !== correctWord && !fullCSWList.includes(distractor)) {
                     return distractor;
                 }
             }
