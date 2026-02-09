@@ -1,0 +1,1081 @@
+<!DOCTYPE html><html lang="en"><head><meta name="x-poe-datastore-behavior" content="local_only"><meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Three-Letter Word Challenge | K S Lo Scrabble</title>
+    <style>
+        :root {
+            --primary: #6366f1; /* Indigo/Purple */
+            --primary-light: #818cf8;
+            --primary-dark: #4338ca;
+            --accent: #a855f7; /* Purple Accent */
+            --background: #f0f4f8;
+            --surface: #ffffff;
+            --text-main: #1e293b;
+            --text-sub: #64748b;
+            --success: #10b981;
+            --error: #ef4444;
+            --glass-border: rgba(255, 255, 255, 0.6);
+            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--glass-border);
+            z-index: 10;
+            flex-shrink: 0;
+        }
+
+        .brand {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent);
+            font-weight: 800;
+            margin-bottom: 0.25rem;
+        }
+
+        h1 {
+            font-size: 1.6rem;
+            background: linear-gradient(to right, var(--primary-dark), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+            margin: 0 1rem;
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-sub);
+            letter-spacing: 1px;
+            margin-top: 0.25rem;
+        }
+
+        /* Main Container */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+            width: 100%;
+            max-width: 550px;
+            margin: 0 auto;
+            position: relative;
+            overflow-y: auto;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 0.75rem;
+            font-size: 0.75rem;
+            color: var(--text-sub);
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border-top: 1px solid var(--glass-border);
+            flex-shrink: 0;
+        }
+
+        /* Views */
+        .view {
+            display: none;
+            width: 100%;
+            flex-direction: column;
+            align-items: center;
+            animation: fadeIn 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+            min-height: 0; 
+        }
+
+        .view.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Glassy Card Style for Containers */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.65);
+            box-shadow: var(--glass-shadow);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 24px;
+            border: 1px solid var(--glass-border);
+            padding: 1.5rem;
+            width: 100%;
+        }
+
+        /* Start Screen Controls */
+        .control-group {
+            margin-bottom: 1.5rem;
+            text-align: center;
+            width: 100%;
+        }
+
+        .control-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-sub);
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Custom Select */
+        .custom-select-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        select {
+            appearance: none;
+            background: white;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            width: 100%;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-main);
+            cursor: pointer;
+            outline: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: all 0.2s;
+        }
+
+        select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        .custom-select-wrapper::after {
+            content: '▼';
+            font-size: 0.8rem;
+            color: var(--primary);
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+
+        /* Start Screen Buttons */
+        .btn-group {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            width: 100%;
+        }
+
+        button {
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .btn-group button {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.9), rgba(168, 85, 247, 0.9));
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: white;
+            padding: 0.8rem;
+            border-radius: 16px;
+            font-size: 1rem;
+            font-weight: 700;
+            box-shadow: 
+                0 4px 10px rgba(99, 102, 241, 0.3),
+                inset 0 1px 0 rgba(255,255,255,0.2);
+        }
+
+        .btn-group button:hover {
+            background: linear-gradient(135deg, rgba(110, 113, 245, 1), rgba(180, 100, 250, 1));
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px rgba(99, 102, 241, 0.4);
+            border-color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Game Screen Aesthetic Updates */
+        .score-board {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-bottom: 1.5rem;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 10px 20px;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid rgba(255,255,255,0.8);
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            line-height: 1.2;
+            min-width: 80px;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-sub);
+            font-weight: 700;
+        }
+
+        .stat-value {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--primary-dark);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: var(--text-sub);
+            font-weight: 500;
+        }
+
+        .grid-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            max-height: 380px;
+        }
+
+        /* Game Buttons */
+        .option-btn {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.9), rgba(168, 85, 247, 0.9));
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 24px;
+            font-size: 2.2rem; /* Adjusted for 3 letters */
+            font-weight: 800;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 
+                0 8px 20px -5px rgba(99, 102, 241, 0.4),
+                inset 0 0 0 1px rgba(255,255,255,0.2),
+                inset 0 2px 10px rgba(255,255,255,0.2);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        .option-btn::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to bottom right,
+                rgba(255,255,255,0) 0%,
+                rgba(255,255,255,0) 40%,
+                rgba(255,255,255,0.2) 50%,
+                rgba(255,255,255,0) 60%,
+                rgba(255,255,255,0) 100%
+            );
+            transform: rotate(30deg);
+            transition: transform 0.5s;
+            opacity: 0;
+        }
+
+        .option-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 30px -5px rgba(99, 102, 241, 0.5);
+            background: linear-gradient(135deg, rgba(110, 113, 245, 1), rgba(180, 100, 250, 1));
+            border-color: rgba(255, 255, 255, 0.8);
+        }
+
+        .option-btn:hover::after {
+            opacity: 1;
+            transform: rotate(30deg) translate(20%, 20%);
+        }
+
+        .option-btn:active {
+            transform: scale(0.96);
+        }
+
+        .option-btn.correct {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border-color: rgba(255,255,255,0.6);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .option-btn.wrong {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            border-color: rgba(255,255,255,0.6);
+            box-shadow: 0 10px 25px rgba(239, 68, 68, 0.4);
+            animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+        }
+
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+
+        /* Definition Box */
+        .definition-box {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 16px;
+            width: 100%;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.4s ease;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid rgba(99, 102, 241, 0.1);
+        }
+
+        .definition-box.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .def-word {
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .def-text {
+            font-size: 1rem;
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        /* Navigation Buttons */
+        .next-btn-container {
+            width: 100%;
+            height: 60px;
+            margin-top: 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: white;
+            width: 100%;
+            padding: 1rem;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+            border: none;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(99, 102, 241, 0.5);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        /* Quit Button */
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-sub);
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 30px;
+            padding: 0.5rem 1.5rem;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            margin-top: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.8);
+            color: var(--primary);
+            border-color: var(--primary);
+            transform: translateY(-1px);
+        }
+
+        /* Result Screen */
+        .result-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            padding: 2rem;
+            border-radius: 32px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 100%;
+            max-width: 450px;
+            border: 1px solid var(--glass-border);
+            display: flex;
+            flex-direction: column;
+            max-height: 85vh;
+        }
+
+        .final-score {
+            font-size: 4.5rem;
+            font-weight: 900;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0.5rem 0;
+            line-height: 1;
+        }
+
+        .final-time {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-sub);
+            margin-bottom: 1rem;
+            background: rgba(255,255,255,0.5);
+            display: inline-block;
+            padding: 0.25rem 1rem;
+            border-radius: 20px;
+            align-self: center;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .remark {
+            font-size: 1.2rem;
+            color: var(--text-sub);
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+
+        /* Review List Styles */
+        .review-container {
+            margin-top: 1rem;
+            margin-bottom: 1.5rem;
+            text-align: left;
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background: rgba(255,255,255,0.5);
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.6);
+        }
+
+        .review-header {
+            padding: 1rem;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            background: rgba(255,255,255,0.4);
+        }
+
+        .review-list {
+            overflow-y: auto;
+            padding: 0.5rem;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-light) transparent;
+        }
+
+        .review-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        .review-list::-webkit-scrollbar-thumb {
+            background-color: var(--primary-light);
+            border-radius: 3px;
+        }
+
+        .review-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .review-item:last-child {
+            border-bottom: none;
+        }
+
+        .review-word {
+            font-weight: 800;
+            color: var(--primary);
+            width: 60px;
+            flex-shrink: 0;
+        }
+
+        .review-def {
+            font-size: 0.9rem;
+            color: var(--text-sub);
+        }
+
+        @media (max-height: 700px) {
+            h1 { font-size: 1.3rem; }
+            .brand { font-size: 0.65rem; }
+            .grid-options { gap: 0.75rem; max-height: 320px; }
+            .option-btn { font-size: 1.8rem; border-radius: 16px; }
+            .definition-box { margin-top: 0.75rem; padding: 0.75rem; min-height: 60px; }
+            .question-text { margin-bottom: 0.75rem; font-size: 0.9rem; }
+            .score-board { margin-bottom: 1rem; padding: 8px 15px; }
+            .stat-value { font-size: 1rem; }
+            .btn-group { gap: 0.5rem; }
+            .btn-group button { padding: 0.6rem; font-size: 0.9rem; }
+            .result-card { padding: 1.5rem; }
+            .final-score { font-size: 3rem; margin: 0.5rem 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand">K S Lo Scrabble</div>
+        <h1>Three-Letter Word Challenge</h1>
+        <div class="subtitle">CSW24</div>
+    </header>
+
+    <main>
+        <!-- Start Screen -->
+        <div id="start-screen" class="view active">
+            <div class="glass-panel">
+                
+                <div class="control-group">
+                    <label class="control-label">Select Letter to Practice</label>
+                    <div class="custom-select-wrapper">
+                        <select id="letter-select">
+                            <option value="ALL">All Letters</option>
+                            <!-- Options A-Z injected by JS -->
+                        </select>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">Number of Questions</label>
+                    <div class="btn-group">
+                        <button onclick="startGame(10)">10</button>
+                        <button onclick="startGame(20)">20</button>
+                        <button onclick="startGame(30)">30</button>
+                        <button onclick="startGame(40)">40</button>
+                        <button onclick="startGame(50)">50</button>
+                        <button onclick="startGame(100)">100</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="game-screen" class="view">
+            <div class="score-board">
+                <div class="stat-item">
+                    <span class="stat-label">Progress</span>
+                    <span class="stat-value" id="progress-display">1 / 10</span>
+                </div>
+                <!-- Timer -->
+                <div class="stat-item">
+                    <span class="stat-label">Time</span>
+                    <span class="stat-value" id="timer-display">00:00.00</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Score</span>
+                    <span class="stat-value" id="score-display">0</span>
+                </div>
+            </div>
+            
+            <div class="question-text">Choose the correct 3-letter word.</div>
+
+            <div class="grid-options" id="options-grid">
+                <!-- Buttons injected by JS -->
+            </div>
+
+            <div class="definition-box" id="definition-box">
+                <div class="def-word" id="def-word"></div>
+                <div class="def-text" id="def-text"></div>
+            </div>
+
+            <div class="next-btn-container">
+                <button id="next-btn" class="btn-primary" style="display: none;" onclick="nextQuestion()">Next Question</button>
+            </div>
+
+            <button class="btn-secondary" onclick="returnToTitle()">Quit to Title</button>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="result-screen" class="view">
+            <div class="result-card">
+                <h2 style="color: var(--primary-dark);">Challenge Complete!</h2>
+                <div class="final-score" id="final-score">8/10</div>
+                <!-- Final Time Display -->
+                <div class="final-time" id="final-time-display">Time: 00:00.00</div>
+                <div class="remark" id="final-remark">Excellent work!</div>
+                
+                <div class="review-container">
+                    <div class="review-header" id="review-header">Words Practised</div>
+                    <div id="review-list" class="review-list">
+                        <!-- Items injected by JS -->
+                    </div>
+                </div>
+
+                <button class="btn-primary" onclick="returnToTitle()">Play Again</button>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        © <span id="current-year"></span> K S Lo Scrabble Team. All Rights Reserved.
+    </footer>
+
+    <script>
+        // --- Database (CSW24 3-Letter Words) ---
+        // Updated definitions with correct spacing before brackets
+        const wordDatabase = {
+            "AAH": "啊 (感嘆詞)", "AAL": "一種東印度樹", "AAS": "AA的複數 (熔岩)", "ABA": "阿拉伯長袍", "ABB": "緯紗", "ABS": "腹肌", "ABY": "贖罪", 
+            "ACE": "王牌", "ACH": "哎呀 (感嘆詞)", "ACK": "確認訊號", "ACT": "行動", "ADD": "增加", "ADO": "忙亂", "ADS": "廣告 (複數)", "ADZ": "手斧", 
+            "AFF": "脫落 (蘇格蘭語)", "AFT": "在船尾", "AGA": "土耳其官員", "AGE": "年齡", "AGO": "以前", "AGS": "農業 (複數)", 
+            "BAA": "羊叫聲", "BAC": "學士學位", "BAD": "壞的", "BAE": "寶貝 (愛人)", "BAG": "袋子", "BAH": "呸 (感嘆詞)", "BAL": "巴拉莫爾酒", "BAM": "欺騙", 
+            "BAN": "禁止", "BAO": "包子", "BAP": "小圓麵包", "BAR": "酒吧; 條", "BAS": "靈魂 (複數)", "BAT": "蝙蝠; 球棒", "BAW": "球 (蘇格蘭語)", "BAY": "海灣", 
+            "BED": "床", "BEE": "蜜蜂", "BEG": "乞求", "BEL": "貝爾 (音量單位)", "BEN": "山峰 (蘇格蘭語)", 
+            "CAA": "呼叫 (蘇格蘭語)", "CAB": "計程車", "CAD": "無賴", "CAF": "咖啡廳 (俚語)", "CAG": "小裂口", "CAL": "卡路里", "CAM": "凸輪", "CAN": "罐頭; 能", 
+            "CAP": "帽子", "CAR": "汽車", "CAT": "貓", "CAW": "烏鴉叫聲", "CAY": "珊瑚礁島", "CAZ": "休閒 (Casual)", "CEE": "字母C", "CEL": "賽璐珞片", "CEP": "牛肝菌", 
+            "CHA": "茶", "CHE": "車 (人名)", "CHI": "希臘字母Chi", "CID": "首領 (西班牙)", 
+            "DAB": "輕拍", "DAD": "爸爸", "DAE": "做 (蘇格蘭語)", "DAG": "懸掛的羊毛", "DAH": "長劃 (摩斯密碼)", "DAK": "郵政運輸", "DAL": "豆類料理", "DAM": "水壩", 
+            "DAN": "段 (武術等級)", "DAP": "輕躍", "DAS": "爸爸 (複數)", "DAW": "寒鴉", "DAY": "日子", "DEB": "初次登台者", "DEE": "字母D", "DEF": "極好的 (俚語)", 
+            "DEG": "澆水", "DEI": "神 (拉丁語)", "DEL": "微分算符", "DEN": "獸穴", "DEP": "便利店 (法語)", 
+            "EAN": "分娩 (方言)", "EAR": "耳朵", "EAS": "河流 (複數)", "EAT": "吃", "EAU": "水 (法語)", "EBB": "退潮", "ECH": "哎 (感嘆詞)", "ECO": "生態", "ECU": "古法國金幣", 
+            "EDH": "古英語字母", "EDS": "編輯 (複數)", "EEK": "哎呀 (尖叫)", "EEL": "鰻魚", "EEN": "眼睛 (方言)", "EEW": "噁 (表示厭惡)", "EFF": "字母F", "EFS": "字母F (複數)", 
+            "EFT": "蠑螈", "EGG": "蛋", "EGO": "自我", "EHS": "嗯 (複數)", 
+            "FAA": "跌倒 (方言)", "FAB": "極好的", "FAD": "一時的時尚", "FAE": "從 (蘇格蘭語)", "FAG": "苦差事; 煙", "FAH": "音符Fa", "FAM": "家庭 (俚語)", "FAN": "風扇; 迷", 
+            "FAP": "醉的 (古語)", "FAR": "遠", "FAS": "音符Fa (複數)", "FAT": "胖的", "FAV": "最愛 (Favorite)", "FAW": "吉普賽人", "FAX": "傳真", "FAY": "接合", 
+            "FED": "餵 (過去式)", "FEE": "費用", "FEG": "部分 (方言)", "FEH": "希伯來貨幣", "FEM": "女性", 
+            "GAB": "閒聊", "GAD": "閒逛", "GAE": "走 (蘇格蘭語)", "GAG": "塞口物", "GAK": "古柯鹼 (俚語)", "GAL": "女孩", "GAM": "鯨群", "GAN": "走 (方言)", "GAP": "缺口", 
+            "GAR": "長嘴魚", "GAS": "氣體", "GAT": "手槍 (俚語)", "GAU": "區 (納粹德國)", "GAW": "不完美的彩虹", "GAY": "快樂的; 同性戀", "GED": "狗魚", "GEE": "向右轉", 
+            "GEL": "凝膠", "GEM": "寶石", "GEN": "情報", "GEO": "小海灣", 
+            "HAD": "有 (過去式)", "HAE": "有 (蘇格蘭語)", "HAG": "女巫", "HAH": "哈 (笑聲)", "HAJ": "朝聖", "HAM": "火腿", "HAN": "有 (古語)", "HAO": "好 (越南貨幣)", 
+            "HAP": "運氣", "HAS": "有 (第三人稱)", "HAT": "帽子", "HAW": "山楂果", "HAY": "乾草", "HEH": "希伯來字母He", "HEM": "摺邊", "HEN": "母雞", "HEP": "臀部 (Hip)", 
+            "HER": "她", "HES": "他 (複數)", "HET": "異性戀", "HEW": "砍", 
+            "ICE": "冰", "ICH": "魚白病", "ICK": "噁 (感嘆詞)", "ICY": "冰冷的", "IDE": "圓腹雅羅魚", "IDS": "本我 (複數)", "IFF": "若且唯若", "IFS": "如果 (複數)", "IGG": "忽略 (俚語)", 
+            "ILK": "家族; 種類", "ILL": "生病的", "IMP": "小惡魔", "ING": "草地", "INK": "墨水", "INN": "客棧", "INS": "執政黨", "INT": "截距", "ION": "離子", 
+            "IOS": "伊俄 (複數)", "IRE": "憤怒", "IRK": "使厭煩", 
+            "JAB": "猛戳", "JAG": "尖齒", "JAI": "勝利 (印地語)", "JAK": "波羅蜜", "JAM": "果醬; 擁擠", "JAP": "日本 (貶義)", "JAR": "罐子", "JAW": "下顎", "JAY": "松鴉", 
+            "JEE": "向右轉 (Gee)", "JET": "噴射機", "JEU": "遊戲 (法語)", "JIB": "船首三角帆", "JIG": "吉格舞", "JIN": "精靈 (伊斯蘭)", "JIZ": "假髮 (俚語)", "JOB": "工作", 
+            "JOE": "傢伙; 咖啡", "JOG": "慢跑", "JOL": "玩樂 (南非語)", "JOR": "水罐", 
+            "KAB": "古希伯來量詞", "KAE": "寒鴉 (方言)", "KAF": "希伯來字母Kaph", "KAI": "食物 (紐西蘭)", "KAK": "糞便 (俚語)", "KAM": "歪的", "KAS": "櫃子 (荷蘭語)", 
+            "KAT": "巧茶 (灌木)", "KAW": "烏鴉叫聲", "KAY": "字母K", "KEA": "啄羊鸚鵡", "KEB": "死產的羊", "KED": "羊蝨蠅", "KEF": "大麻", "KEG": "小桶", "KEN": "視野; 知識", 
+            "KEP": "接住 (方言)", "KET": "腐肉", "KEX": "乾莖", "KEY": "鑰匙", "KHI": "希臘字母Chi", 
+            "LAB": "實驗室", "LAC": "紫膠", "LAD": "少年", "LAG": "落後", "LAH": "音符La", "LAM": "逃亡", "LAP": "膝部; 一圈", "LAR": "家神 (羅馬)", "LAS": "音符La (複數)", 
+            "LAT": "背肌", "LAV": "廁所 (俚語)", "LAW": "法律", "LAX": "鬆懈的", "LAY": "放置", "LEA": "草地", "LED": "引導 (過去式)", "LEE": "避風處", "LEG": "腿", 
+            "LEI": "花環", "LEK": "列克 (阿爾巴尼亞幣)", "LEP": "痲瘋病", 
+            "MAA": "羊叫聲", "MAC": "雨衣", "MAD": "瘋狂的", "MAE": "更多 (方言)", "MAG": "雜誌 (俚語)", "MAK": "製作 (方言)", "MAL": "疾病 (法語)", "MAM": "媽媽", 
+            "MAN": "男人", "MAP": "地圖", "MAR": "損壞", "MAS": "媽媽 (複數)", "MAT": "墊子", "MAW": "動物的胃", "MAX": "最大值", "MAY": "可能; 五月", "MED": "藥物; 醫學", 
+            "MEE": "麵 (亞洲)", "MEG": "半便士", "MEH": "普普通通 (感嘆詞)", "MEL": "蜂蜜", 
+            "NAB": "捉住", "NAE": "不 (蘇格蘭語)", "NAG": "嘮叨", "NAH": "不 (口語)", "NAM": "越南", "NAN": "奶奶; 饢", "NAP": "小睡", "NAS": "不 (方言)", "NAT": "民族主義者", 
+            "NAV": "導航", "NAW": "不 (口語)", "NAY": "反對票", "NEB": "鳥嘴", "NED": "小混混 (蘇格蘭)", "NEE": "娘家姓", "NEF": "中殿 (建築)", "NEG": "底片", 
+            "NEK": "山口 (南非)", "NEP": "貓薄荷", "NET": "網", "NEW": "新的", 
+            "OAF": "呆子", "OAK": "橡樹", "OAR": "槳", "OAT": "燕麥", "OBA": "首領 (西非)", "OBE": "巫術", "OBI": "和服腰帶", "OBO": "散裝礦石船", "OBS": "觀察 (複數)", 
+            "OCA": "酢漿薯", "OCH": "噢 (蘇格蘭語)", "ODA": "後宮房間", "ODD": "奇怪的", "ODE": "頌歌", "ODS": "生命力 (複數)", "OES": "旋風 (複數)", "OFF": "離開; 關閉", 
+            "OFT": "經常", "OHM": "歐姆", "OHO": "噢嗬 (驚訝)", "OHS": "噢 (複數)", 
+            "PAC": "軟皮靴", "PAD": "墊子", "PAH": "呸 (感嘆詞)", "PAK": "包裝", "PAL": "夥伴", "PAM": "梅花J (紙牌)", "PAN": "平底鍋", "PAP": "軟食", "PAR": "標準; 票面價值", 
+            "PAS": "舞步", "PAT": "輕拍", "PAV": "鋪路", "PAW": "爪子", "PAX": "和平之吻", "PAY": "支付", "PEA": "豌豆", "PEC": "胸肌", "PED": "腳 (詞根)", "PEE": "撒尿", 
+            "PEG": "釘子", "PEH": "希伯來字母Pe", 
+            "QAT": "巧茶 (灌木)", "QIN": "古琴", "QIS": "氣 (複數)", "QUA": "作為", 
+            "RAD": "激進的", "RAG": "破布", "RAH": "萬歲 (歡呼)", "RAI": "雷伊音樂 (阿爾及利亞)", "RAJ": "統治 (印度)", "RAM": "公羊; 撞擊", "RAN": "跑 (過去式)", 
+            "RAP": "敲擊; 饒舌", "RAS": "埃塞俄比亞王子", "RAT": "老鼠", "RAV": "拉比", "RAW": "生的", "RAX": "伸展 (方言)", "RAY": "光線", "REB": "叛軍", "REC": "娛樂", 
+            "RED": "紅色", "REE": "篩選", "REF": "裁判", "REG": "規章", "REH": "鹽鹼土", 
+            "SAB": "哭泣 (方言)", "SAC": "囊", "SAD": "悲傷的", "SAE": "如此 (蘇格蘭語)", "SAG": "下垂", "SAI": "捲尾猴", "SAL": "鹽", "SAM": "聚集", "SAN": "療養院", 
+            "SAP": "樹液; 笨蛋", "SAR": "薩爾樹", "SAT": "坐 (過去式)", "SAU": "盾 (越南幣)", "SAV": "薩伏依捲心菜", "SAW": "鋸子; 看見", "SAX": "薩克斯風", "SAY": "說", 
+            "SAZ": "薩茲琴", "SEA": "海", "SEC": "秒; 乾型(酒)", "SED": "說 (方言)", 
+            "TAB": "標籤", "TAD": "一點點", "TAE": "腳趾 (蘇格蘭語)", "TAG": "標籤; 捉人遊戲", "TAI": "加吉魚 (日語)", "TAJ": "高冠", "TAK": "拿 (方言)", "TAM": "蘇格蘭帽", 
+            "TAN": "曬黑", "TAO": "道 (哲學)", "TAP": "水龍頭; 輕拍", "TAR": "焦油", "TAS": "謝謝 (複數)", "TAT": "梭結花邊", "TAU": "希臘字母Tau", "TAV": "希伯來字母Tav", 
+            "TAW": "彈珠", "TAX": "稅", "TAY": "茶 (方言)", "TEA": "茶", "TEC": "偵探", 
+            "UDO": "獨活 (植物)", "UDS": "上帝 (感嘆詞)", "UEY": "U型迴轉", "UFO": "不明飛行物", "UGH": "噁 (感嘆詞)", "UGS": "憎惡 (複數)", "UKE": "烏克麗麗", "ULE": "橡膠樹", 
+            "ULU": "愛斯基摩刀", "UME": "梅 (日語)", "UMM": "嗯 (猶豫)", "UMP": "裁判", "UMS": "嗯 (複數)", "UMU": "土爐 (波利尼西亞)", "UNI": "大學", "UNS": "一個 (複數)", 
+            "UPO": "在...之上", "UPS": "提升", "URB": "城市區域", "URD": "烏爾都豆", "URE": "野牛 (已滅絕)", 
+            "VAC": "吸塵器", "VAE": "在... (蘇格蘭語)", "VAG": "流浪者", "VAN": "廂型車; 先鋒", "VAR": "變量", "VAS": "管; 脈管", "VAT": "大桶", "VAU": "希臘字母Digamma", 
+            "VAV": "希伯來字母Vav", "VAW": "發誓 (方言)", "VAX": "疫苗", "VEE": "V字形", "VEG": "蔬菜", "VET": "獸醫", "VEX": "使煩惱", "VIA": "經由", "VID": "影片", 
+            "VIE": "競爭", "VIG": "高利貸利息", "VIM": "活力", "VIN": "酒 (法語)", 
+            "WAB": "網 (方言)", "WAD": "一團", "WAE": "悲哀 (蘇格蘭語)", "WAG": "搖擺", "WAI": "水 (毛利語)", "WAN": "蒼白的", "WAP": "猛擲", "WAR": "戰爭", "WAS": "是 (過去式)", 
+            "WAT": "濕的 (方言)", "WAW": "波浪 (方言)", "WAX": "蠟", "WAY": "路; 方法", "WAZ": "小便 (俚語)", "WEB": "網", "WED": "結婚", "WEE": "微小的", "WEM": "子宮 (古語)", 
+            "WEN": "粉瘤", "WET": "濕的", "WEX": "蠟 (方言)", 
+            "XED": "刪除 (過去式)", "XIS": "希臘字母Xi (複數)", 
+            "YAD": "指示棒 (猶太教)", "YAE": "一個 (方言)", "YAG": "釔鋁石榴石", "YAH": "呀 (感嘆詞)", "YAK": "犛牛", "YAM": "山藥", "YAP": "吠叫", "YAR": "靈活的 (航海)", 
+            "YAS": "亞洲人 (俚語)", "YAW": "偏航", "YAY": "耶 (歡呼)", "YEA": "贊成", "YEH": "是的 (口語)", "YEN": "日圓; 渴望", "YEP": "是的 (口語)", "YER": "你的 (方言)", 
+            "YES": "是", "YET": "還; 但是", "YEW": "紫杉", "YEX": "打嗝", "YEZ": "你們 (方言)", 
+            "ZAG": "急轉", "ZAP": "攻擊; 快速移動", "ZAS": "披薩 (複數)", "ZAX": "石板斧", "ZEA": "玉米屬", "ZED": "字母Z", "ZEE": "字母Z (美式)", "ZEK": "勞改犯 (蘇聯)", 
+            "ZEL": "鈸 (東方)", "ZEN": "禪", "ZEP": "齊柏林飛船", "ZEX": "性別中立代詞", "ZHO": "犏牛", "ZIG": "急轉", "ZIN": "金粉黛紅酒", "ZIP": "拉鍊; 活力", 
+            "ZIT": "青春痘", "ZIZ": "小睡 (俚語)", "ZOA": "動物 (複數)", "ZOL": "大麻捲菸", "ZOO": "動物園"
+        };
+
+        const validWords = Object.keys(wordDatabase);
+        const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+        // --- Game State ---
+        let currentQuestionIndex = 0;
+        let totalQuestions = 10;
+        let score = 0;
+        let currentCorrectWord = "";
+        let attemptMade = false;
+        let sessionWords = [];
+        let filteredWords = []; // Words available based on letter selection
+        let gamePool = []; // Shuffled deck for the current game
+        
+        // --- Timer State ---
+        let startTime;
+        let timerInterval;
+
+        // --- DOM Elements ---
+        const startScreen = document.getElementById('start-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const optionsGrid = document.getElementById('options-grid');
+        const definitionBox = document.getElementById('definition-box');
+        const defWord = document.getElementById('def-word');
+        const defText = document.getElementById('def-text');
+        const nextBtn = document.getElementById('next-btn');
+        const progressDisplay = document.getElementById('progress-display');
+        const scoreDisplay = document.getElementById('score-display');
+        const timerDisplay = document.getElementById('timer-display');
+        const finalScore = document.getElementById('final-score');
+        const finalTimeDisplay = document.getElementById('final-time-display');
+        const finalRemark = document.getElementById('final-remark');
+        const reviewList = document.getElementById('review-list');
+        const letterSelect = document.getElementById('letter-select');
+        const reviewHeader = document.getElementById('review-header');
+
+        // --- Initialization ---
+        function init() {
+            // Populate Letter Select
+            alphabet.split('').forEach(letter => {
+                const option = document.createElement('option');
+                option.value = letter;
+                option.textContent = `Words starting with ${letter}`;
+                letterSelect.appendChild(option);
+            });
+            document.getElementById('current-year').textContent = new Date().getFullYear();
+        }
+
+        // --- Functions ---
+
+        function switchView(viewId) {
+            document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+        }
+
+        function startGame(numQuestions) {
+            const selectedLetter = letterSelect.value;
+            
+            // Filter words based on selection
+            if (selectedLetter === 'ALL') {
+                filteredWords = [...validWords];
+            } else {
+                filteredWords = validWords.filter(w => w.startsWith(selectedLetter));
+            }
+
+            if (filteredWords.length === 0) {
+                alert("No words found for this selection.");
+                return;
+            }
+
+            totalQuestions = numQuestions;
+            currentQuestionIndex = 0;
+            score = 0;
+            sessionWords = [];
+            
+            // Create a game pool (deck)
+            // If we ask for 50 questions but only have 10 words (e.g., 'X'), we need to repeat.
+            gamePool = [...filteredWords];
+            shuffleArray(gamePool);
+
+            // If not enough words, duplicate the pool until we have enough
+            while (gamePool.length < totalQuestions) {
+                let moreWords = [...filteredWords];
+                shuffleArray(moreWords);
+                gamePool = gamePool.concat(moreWords);
+            }
+            
+            // Trim to exact number needed
+            gamePool = gamePool.slice(0, totalQuestions);
+
+            switchView('game-screen');
+            startTimer();
+            loadQuestion();
+        }
+
+        function returnToTitle() {
+            stopTimer();
+            switchView('start-screen');
+        }
+
+        // --- Timer Functions ---
+        function startTimer() {
+            startTime = Date.now();
+            timerDisplay.textContent = "00:00.00";
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(updateTimer, 10);
+        }
+
+        function stopTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+        }
+
+        function updateTimer() {
+            const now = Date.now();
+            const elapsed = now - startTime;
+            timerDisplay.textContent = formatTime(elapsed);
+        }
+
+        function formatTime(totalMilliseconds) {
+            const minutes = Math.floor(totalMilliseconds / 60000);
+            const seconds = Math.floor((totalMilliseconds % 60000) / 1000);
+            const centiseconds = Math.floor((totalMilliseconds % 1000) / 10);
+            return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${centiseconds.toString().padStart(2, '0')}`;
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        // --- Distractor Logic ---
+        function generateDistractor(correctWord) {
+            // Logic:
+            // 1. Must start with same letter (index 0).
+            // 2. Must share EITHER index 1 OR index 2.
+            // 3. The changed letter is random.
+            // 4. Result must NOT be in validWords.
+            
+            const firstLetter = correctWord[0];
+            const secondLetter = correctWord[1];
+            const thirdLetter = correctWord[2];
+            
+            let distractor = "";
+            let safetyCounter = 0;
+
+            while (true) {
+                safetyCounter++;
+                if (safetyCounter > 200) {
+                    // Fallback if strict logic fails (unlikely)
+                    return firstLetter + "XX"; 
+                }
+
+                // Randomly decide whether to keep 2nd or 3rd letter
+                // 0 = keep 2nd (change 3rd), 1 = keep 3rd (change 2nd)
+                const mode = Math.random() < 0.5 ? 0 : 1;
+                const randomChar = alphabet[Math.floor(Math.random() * alphabet.length)];
+
+                if (mode === 0) {
+                    // Keep 1st and 2nd, change 3rd
+                    distractor = firstLetter + secondLetter + randomChar;
+                } else {
+                    // Keep 1st and 3rd, change 2nd
+                    distractor = firstLetter + randomChar + thirdLetter;
+                }
+
+                // Validation
+                if (distractor !== correctWord && !validWords.includes(distractor)) {
+                    return distractor;
+                }
+            }
+        }
+
+        function loadQuestion() {
+            definitionBox.classList.remove('visible');
+            nextBtn.style.display = 'none';
+            optionsGrid.innerHTML = '';
+            attemptMade = false;
+            
+            progressDisplay.textContent = `${currentQuestionIndex + 1} / ${totalQuestions}`;
+            scoreDisplay.textContent = `${score}`;
+
+            // Pick word from pre-shuffled pool
+            currentCorrectWord = gamePool[currentQuestionIndex];
+            sessionWords.push(currentCorrectWord);
+
+            const options = new Set();
+            options.add(currentCorrectWord);
+            
+            // Generate 3 distractors
+            while (options.size < 4) {
+                options.add(generateDistractor(currentCorrectWord));
+            }
+
+            const shuffledOptions = Array.from(options).sort(() => Math.random() - 0.5);
+
+            shuffledOptions.forEach(word => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = word;
+                btn.onclick = () => handleAnswer(btn, word);
+                optionsGrid.appendChild(btn);
+            });
+        }
+
+        function handleAnswer(btn, selectedWord) {
+            if (nextBtn.style.display === 'block' || nextBtn.style.display === 'flex') return;
+
+            if (selectedWord === currentCorrectWord) {
+                btn.classList.add('correct');
+                if (!attemptMade) {
+                    score++;
+                    scoreDisplay.textContent = `${score}`;
+                }
+                defWord.textContent = currentCorrectWord;
+                defText.textContent = wordDatabase[currentCorrectWord];
+                definitionBox.classList.add('visible');
+
+                if (currentQuestionIndex === totalQuestions - 1) {
+                    nextBtn.textContent = "Finish";
+                } else {
+                    nextBtn.textContent = "Next Question";
+                }
+                nextBtn.style.display = 'block';
+
+                const allBtns = optionsGrid.querySelectorAll('.option-btn');
+                allBtns.forEach(b => {
+                    if (b !== btn) b.style.opacity = '0.5';
+                    b.style.cursor = 'default';
+                });
+
+            } else {
+                btn.classList.add('wrong');
+                attemptMade = true;
+            }
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < totalQuestions) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            stopTimer();
+            const now = Date.now();
+            const elapsed = now - startTime;
+            
+            switchView('result-screen');
+            finalScore.textContent = `${score}/${totalQuestions}`;
+            finalTimeDisplay.textContent = `Time: ${formatTime(elapsed)}`;
+            
+            const percentage = (score / totalQuestions) * 100;
+            let remark = "";
+            let color = "";
+
+            if (percentage === 100) {
+                remark = "Perfect! You are a Scrabble Master!";
+                color = "var(--success)";
+            } else if (percentage >= 80) {
+                remark = "Excellent work! Keep it up!";
+                color = "var(--primary)";
+            } else if (percentage >= 60) {
+                remark = "Good job! A little more practice needed.";
+                color = "#eab308";
+            } else {
+                remark = "Keep practicing! You'll get there.";
+                color = "var(--error)";
+            }
+
+            finalRemark.textContent = remark;
+            finalScore.style.background = `linear-gradient(to right, ${color}, var(--accent))`;
+            finalScore.style.webkitBackgroundClip = "text";
+            finalScore.style.webkitTextFillColor = "transparent";
+
+            renderReviewList();
+        }
+
+        function renderReviewList() {
+            reviewList.innerHTML = '';
+            
+            // Update Header with Focused Letter
+            const letter = letterSelect.value;
+            const displayLetter = letter === 'ALL' ? 'All Letters' : `Letter ${letter}`;
+            reviewHeader.textContent = `Words Practised (${displayLetter})`;
+
+            // Deduplicate words for review list
+            const uniqueSessionWords = [...new Set(sessionWords)];
+            const sortedWords = uniqueSessionWords.sort();
+
+            sortedWords.forEach(word => {
+                const item = document.createElement('div');
+                item.className = 'review-item';
+                
+                const wordSpan = document.createElement('div');
+                wordSpan.className = 'review-word';
+                wordSpan.textContent = word;
+
+                const defSpan = document.createElement('div');
+                defSpan.className = 'review-def';
+                defSpan.textContent = wordDatabase[word];
+
+                item.appendChild(wordSpan);
+                item.appendChild(defSpan);
+                reviewList.appendChild(item);
+            });
+        }
+
+        // Run initialization
+        init();
+
+    </script>
+
+
+</body></html>
